@@ -8,7 +8,7 @@ Any packages
 ## Installation (WIP)
 
 ## Contributors
-Derek Osborne - Project Manager, Developer  
+Derek Osborne - Project Manager    
 Brad Adams - Software Developer  
 Luke Rappa - Software Developer  
 Brenan Patrick - Software Developer  
