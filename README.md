@@ -6,6 +6,9 @@ Python 3.7
 Any packages
 
 ## Installation (WIP)
+## Diagrams
+To open each drawio file, you must open the file with https://app.diagrams.net/.
+If you use the GitHub extension, you can open directly from the repo and branch. Otherwise, you will need a local copy to open.
 
 ## Contributors
 Derek Osborne - Project Manager    
