@@ -9,7 +9,8 @@ from tkinter import ttk
 from src.Window import Window
 
 APPVERSION = '0.0.0.0'
+PATHTODATASETS = './datasets'
 
 if __name__ == "__main__":
-    window = Window()
+    window = Window(PATHTODATASETS)
     window.mainloop()
