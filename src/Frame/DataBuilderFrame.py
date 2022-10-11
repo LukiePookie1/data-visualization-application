@@ -37,7 +37,7 @@ class SelectUserAndDateGroup(tk.Frame):
         self.patientListbox.pack(side=tk.RIGHT, expand=tk.NO, fill=tk.BOTH)
         self.patientListbox.bind('<<ListboxSelect>>', self.OnPatientSelected)
         
-        self.bind('<Return>', self.debugPrint)
+        # self.patientListbox.bind('<Return>', self.debugPrint)
 
     def UpdateDateOptions(self):
         """ Update date list and listbox of dates"""
@@ -73,7 +73,6 @@ class SelectUserAndDateGroup(tk.Frame):
 
     def OnPatientSelected(self, evt=None):
         """Callback for user selection of patient id. Updates file path to patient files"""
-
         try:
             selected_index = self.patientListbox.curselection()[0]
         except IndexError:
