@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class DataBuilderFrame(tk.Frame):
+    """ User Interface for configuring dataset and options to load in"""
     def __init__(self, pathToDatasets):
         super().__init__(highlightbackground="red", highlightthickness=2)
         self.label = tk.Label(self, text='Data Builder Tab')
@@ -15,6 +16,7 @@ class DataBuilderFrame(tk.Frame):
 
         self.button = tk.Button(self, text="Save", command=self.grabFileAndDisplay)
         self.button.pack(ipadx=1, ipady=1)
+
 
     def grabFileAndDisplay(self):
         self.pathToCSV = os.path.join(self.fileSelectorGroup.GetPathToFiles(), 'summary.csv')
@@ -47,8 +49,8 @@ class SelectUserAndDateGroup(tk.Frame):
         self.patientListbox = tk.Listbox(self, selectmode=tk.SINGLE, listvariable=self.patientListVar)
         self.patientListbox.pack(side=tk.RIGHT, expand=tk.NO, fill=tk.BOTH)
         self.patientListbox.bind('<<ListboxSelect>>', self.OnPatientSelected)
-
         # self.patientListbox.bind('<Return>', self.debugPrint)
+
 
     def UpdateDateOptions(self):
         """ Update date list and listbox of dates"""
@@ -118,12 +120,14 @@ class DisplayData(tk.Frame):
         self.readData()
         self.setupFrameWidget()
 
+
     def readData(self):
         """Read the data from the target CSV to df"""
         columns = ["Datetime (UTC)", "Acc magnitude avg", "Eda avg", "Temp avg"]
         self.df = pd.read_csv(self.pathToCSV, usecols=columns)
         self.df["Datetime (UTC)"] = pd.to_datetime(self.df["Datetime (UTC)"])
         self.df["Datetime (UTC)"] = self.df["Datetime (UTC)"].dt.strftime('%H:%M:%S')
+
 
     def setupFrameWidget(self):
         """Create matplotlib graph, plot points, and display to window"""
