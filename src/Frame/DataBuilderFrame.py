@@ -1,8 +1,11 @@
 import tkinter as tk
 import os
-from functools import partial
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class DataBuilderFrame(tk.Frame):
+    """ User Interface for configuring dataset and options to load in"""
     def __init__(self, pathToDatasets):
         super().__init__(highlightbackground="red", highlightthickness=2)
         self.label = tk.Label(self, text='Data Builder Tab')
@@ -11,6 +14,16 @@ class DataBuilderFrame(tk.Frame):
         self.fileSelectorGroup = SelectUserAndDateGroup(self, pathToDatasets)
         self.fileSelectorGroup.pack(anchor=tk.W)
 
+        self.button = tk.Button(self, text="Save", command=self.grabFileAndDisplay)
+        self.button.pack(ipadx=1, ipady=1)
+
+
+    def grabFileAndDisplay(self):
+        self.pathToCSV = os.path.join(self.fileSelectorGroup.GetPathToFiles(), 'summary.csv')
+        self.fileSelectorGroup.destroy()
+        self.button.destroy()
+        self.dataViewGroup = DisplayData(self, self.pathToCSV)
+        self.dataViewGroup.pack(anchor=tk.W)
 
 class SelectUserAndDateGroup(tk.Frame):
     def __init__(self, root, pathToDatasets):
@@ -36,15 +49,15 @@ class SelectUserAndDateGroup(tk.Frame):
         self.patientListbox = tk.Listbox(self, selectmode=tk.SINGLE, listvariable=self.patientListVar)
         self.patientListbox.pack(side=tk.RIGHT, expand=tk.NO, fill=tk.BOTH)
         self.patientListbox.bind('<<ListboxSelect>>', self.OnPatientSelected)
-        
         # self.patientListbox.bind('<Return>', self.debugPrint)
+
 
     def UpdateDateOptions(self):
         """ Update date list and listbox of dates"""
         self.dateList = []
         for i in os.listdir(self.pathToDatasets):
             self.dateList.append(i)
-        
+
         self.dateList.sort()
         self.dateListVar.set(self.dateList)
 
@@ -54,7 +67,7 @@ class SelectUserAndDateGroup(tk.Frame):
         self.patientList = []
         for i in os.listdir(self.pathToPatients):
             self.patientList.append(i)
-        
+
         self.patientList.sort()
         self.patientListVar.set(self.patientList)
 
@@ -88,7 +101,41 @@ class SelectUserAndDateGroup(tk.Frame):
         else:
             print('No path available from data builder panel.')
             return None
-    
+
 
     def debugPrint(self, evt=None):
         print('Debug: ' + self.pathToFiles)
+
+
+class DisplayData(tk.Frame):
+    def __init__(self, root, pathToCSV):
+        """Initialize a Data Displayer for displaying the data from a specific CSV"""
+        if not os.path.isfile(pathToCSV):
+            raise Exception('Path to CSV: ' + pathToCSV + ' does not exist or is not a directory.')
+
+        super().__init__(root, highlightbackground="blue", highlightthickness=2)
+        self.root = root
+        self.pathToCSV = pathToCSV
+        self.df = None
+        self.readData()
+        self.setupFrameWidget()
+
+
+    def readData(self):
+        """Read the data from the target CSV to df"""
+        columns = ["Datetime (UTC)", "Acc magnitude avg", "Eda avg", "Temp avg"]
+        self.df = pd.read_csv(self.pathToCSV, usecols=columns)
+        self.df["Datetime (UTC)"] = pd.to_datetime(self.df["Datetime (UTC)"])
+        self.df["Datetime (UTC)"] = self.df["Datetime (UTC)"].dt.strftime('%H:%M:%S')
+
+
+    def setupFrameWidget(self):
+        """Create matplotlib graph, plot points, and display to window"""
+        figure = plt.Figure(figsize=(15,10), dpi=100)
+        ax = figure.add_subplot(111)
+        chart_type = FigureCanvasTkAgg(figure, self)
+        chart_type.get_tk_widget().pack()
+        self.df.set_index('Datetime (UTC)').plot(rot=0, kind='line', legend=True, ax=ax)
+        ax.set_title('Data Line Chart')
+        ax.set_xlabel('Time (HH:MM:SS)')
+        ax.set_ylabel('Value')
