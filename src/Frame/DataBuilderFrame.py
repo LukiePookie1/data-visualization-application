@@ -14,15 +14,26 @@ class DataBuilderFrame(tk.Frame):
         self.fileSelectorGroup = SelectUserAndDateGroup(self, pathToDatasets)
         self.fileSelectorGroup.pack(anchor=tk.W)
 
-        self.button = tk.Button(self, text="Save", command=self.grabFileAndDisplay)
+        self.button = tk.Button(self, text="Save", command=self.chooseCols)
         self.button.pack(ipadx=1, ipady=1)
 
 
-    def grabFileAndDisplay(self):
+    def chooseCols(self):
         self.pathToCSV = os.path.join(self.fileSelectorGroup.GetPathToFiles(), 'summary.csv')
         self.fileSelectorGroup.destroy()
         self.button.destroy()
-        self.dataViewGroup = DisplayData(self, self.pathToCSV)
+        self.colChooseGroup = ChooseColumns(self, self.pathToCSV)
+        self.colChooseGroup.pack(anchor=tk.W)
+
+        self.button = tk.Button(self, text="Save", command=self.display)
+        self.button.pack(ipadx=1, ipady=1)
+
+    def display(self):
+        self.CSVData = self.colChooseGroup.getCSVData()
+        self.chosenCols = self.colChooseGroup.getChoseCols()
+        self.colChooseGroup.destroy()
+        self.button.destroy()
+        self.dataViewGroup = DisplayData(self, self.CSVData, self.chosenCols)
         self.dataViewGroup.pack(anchor=tk.W)
 
 class SelectUserAndDateGroup(tk.Frame):
@@ -80,7 +91,7 @@ class SelectUserAndDateGroup(tk.Frame):
             return
 
         self.pathToPatients = os.path.join(self.pathToDatasets, self.dateListbox.get(selected_index))
-        print(self.pathToPatients)
+        #print(self.pathToPatients)
         self.UpdatePatientOptions()
 
 
@@ -106,18 +117,95 @@ class SelectUserAndDateGroup(tk.Frame):
     def debugPrint(self, evt=None):
         print('Debug: ' + self.pathToFiles)
 
-
-class DisplayData(tk.Frame):
+class ChooseColumns(tk.Frame):
     def __init__(self, root, pathToCSV):
-        """Initialize a Data Displayer for displaying the data from a specific CSV"""
         if not os.path.isfile(pathToCSV):
-            raise Exception('Path to CSV: ' + pathToCSV + ' does not exist or is not a directory.')
+            raise Exception('Path to CSV: ' + pathToCSV + ' does not exist or is not a file.')
 
-        super().__init__(root, highlightbackground="blue", highlightthickness=2)
+        super().__init__(root, highlightbackground="pink", highlightthickness=2)
         self.root = root
         self.pathToCSV = pathToCSV
         self.df = None
-        self.readData()
+        self.unchosenColumns = []
+        self.chosenColumns = []
+        self.getAllCols()
+        self.unchoseColVar = tk.StringVar(value=self.unchosenColumns)
+        self.choseColVar = tk.StringVar(value=self.chosenColumns)
+
+        self.unchoseColListbox = tk.Listbox(self, selectmode=tk.SINGLE, listvariable=self.unchoseColVar)
+        self.unchoseColListbox.pack(side=tk.LEFT, expand=tk.NO, fill=tk.BOTH)
+        self.choseColListbox = tk.Listbox(self, selectmode=tk.SINGLE, listvariable=self.choseColVar)
+        self.choseColListbox.pack(side=tk.LEFT, expand=tk.NO, fill=tk.BOTH)
+
+        self.addColButton = tk.Button(self, text="Add Column", command=self.addCol)
+        self.addColButton.pack()
+        self.removeColButton = tk.Button(self, text="Remove Column", command=self.removeCol)
+        self.removeColButton.pack()
+
+    def getAllCols(self):
+        self.df = pd.read_csv(self.pathToCSV)
+        for col in self.df.columns:
+            self.unchosenColumns.append(col)
+        self.unchosenColumns.sort()
+        #print('Debug: ', self.unchosenColumns)
+
+    def addCol(self):
+        try:
+            selected_index = self.unchoseColListbox.curselection()[0]
+        except IndexError:
+            return
+
+        col = self.unchoseColListbox.get(selected_index)
+        self.chosenColumns.append(col)
+        self.unchosenColumns.remove(col)
+        self.updateWindow()
+
+    def removeCol(self):
+        try:
+            selected_index = self.choseColListbox.curselection()[0]
+        except IndexError:
+            return
+
+        col = self.choseColListbox.get(selected_index)
+        self.unchosenColumns.append(col)
+        self.chosenColumns.remove(col)
+        self.updateWindow()
+
+    def updateWindow(self):
+        self.chosenColumns.sort()
+        self.unchosenColumns.sort()
+
+        self.unchoseColListbox.destroy()
+        self.choseColListbox.destroy()
+        self.addColButton.destroy()
+        self.removeColButton.destroy()
+
+        self.unchoseColVar = tk.StringVar(value=self.unchosenColumns)
+        self.choseColVar = tk.StringVar(value=self.chosenColumns)
+
+        self.unchoseColListbox = tk.Listbox(self, selectmode=tk.SINGLE, listvariable=self.unchoseColVar)
+        self.unchoseColListbox.pack(side=tk.LEFT, expand=tk.NO, fill=tk.BOTH)
+        self.choseColListbox = tk.Listbox(self, selectmode=tk.SINGLE, listvariable=self.choseColVar)
+        self.choseColListbox.pack(side=tk.LEFT, expand=tk.NO, fill=tk.BOTH)
+
+        self.addColButton = tk.Button(self, text="Add Column", command=self.addCol)
+        self.addColButton.pack()
+        self.removeColButton = tk.Button(self, text="Remove Column", command=self.removeCol)
+        self.removeColButton.pack()
+    
+    def getCSVData(self):
+        return self.df
+
+    def getChoseCols(self):
+        return self.chosenColumns
+
+class DisplayData(tk.Frame):
+    def __init__(self, root, CSVData, columns):
+        """Initialize a Data Displayer for displaying the data from a specific CSV"""
+        super().__init__(root, highlightbackground="blue", highlightthickness=2)
+        self.root = root
+        self.df = CSVData
+        self.columns = columns
         self.setupFrameWidget()
 
 
@@ -125,17 +213,22 @@ class DisplayData(tk.Frame):
         """Read the data from the target CSV to df"""
         columns = ["Datetime (UTC)", "Acc magnitude avg", "Eda avg", "Temp avg"]
         self.df = pd.read_csv(self.pathToCSV, usecols=columns)
-        self.df["Datetime (UTC)"] = pd.to_datetime(self.df["Datetime (UTC)"])
-        self.df["Datetime (UTC)"] = self.df["Datetime (UTC)"].dt.strftime('%H:%M:%S')
 
 
     def setupFrameWidget(self):
         """Create matplotlib graph, plot points, and display to window"""
+        if "Datetime (UTC)" in self.columns:
+            self.df["Datetime (UTC)"] = pd.to_datetime(self.df["Datetime (UTC)"])
+            self.df["Datetime (UTC)"] = self.df["Datetime (UTC)"].dt.strftime('%H:%M:%S')
         figure = plt.Figure(figsize=(15,10), dpi=100)
         ax = figure.add_subplot(111)
         chart_type = FigureCanvasTkAgg(figure, self)
         chart_type.get_tk_widget().pack()
-        self.df.set_index('Datetime (UTC)').plot(rot=0, kind='line', legend=True, ax=ax)
+        if "Datetime (UTC)" in self.columns:
+            self.df[self.columns].set_index('Datetime (UTC)').plot(rot=0, kind='line', legend=True, ax=ax)
+            ax.set_xlabel('Time (HH:MM:SS)')
+        else:
+            self.df[self.columns].plot(rot=0, kind='line', legend=True, ax=ax)
+            ax.set_xlabel('Row Number')
         ax.set_title('Data Line Chart')
-        ax.set_xlabel('Time (HH:MM:SS)')
         ax.set_ylabel('Value')
