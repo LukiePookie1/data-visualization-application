@@ -2,23 +2,19 @@
 An Interactive Data Visualization Application for Embrace Condensed Data Sets
 
 ## Dependencies (WIP)
-Python 3.7+
-Tkinter
-Matplotlib
-
-## Installation (WIP)
-Linux doesn't have Tkinter downloaded by default.   
-Use `pip install tk` or respective package manager like conda `conda install tk` to install.
+Python 3.7+  
+Tkinter - `pip install tk` or `conda install tk`  
+Matplotlib  - `pip install matplotlib` or `conda install matplotlib`  
 
 ## Diagrams
 To open each drawio file, you must open the file with https://app.diagrams.net/.  
-If you use the GitHub extension, you can open directly from the repo and branch.  
+If you have the GitHub extension, you can open directly from the repo and branch.  
 Otherwise, you will need a local copy to open.  
 
 ## Contributors
-Derek Osborne - Project Manager    
-Brad Adams - Software Developer  
-Luke Rappa - Software Developer  
-Brenan Patrick - Software Developer  
-Will Simpson -  Software Developer  
+Derek Osborne - Project Manager - ZenHub / Designer / Reviewer  
+Brad Adams - Software Developer - Backend  
+Luke Rappa - Software Developer - UI / Layout  
+Brenan Patrick - Software Developer - UI / Data Builder Tab  
+Will Simpson -  Software Developer - UI / Data Visualization  
 
