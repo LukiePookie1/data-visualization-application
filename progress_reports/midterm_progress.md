@@ -14,6 +14,7 @@ Will Simpson -  Software Developer - UI / Data Visualization
 
 In terms of development, we help each other out in each item.  
 Everyone is a developer on some item.  
+Most of the team is unfamiliar with Python, Matplot, and tkinter
 
 ## Features Planned for Project
 - Develop a desktop application to visualize Embrace2 datasets
@@ -52,6 +53,23 @@ Everyone is a developer on some item.
   - ZenHub Extension
   - Diagrams.net
 
-## Prototyping Results (WIP)
+## Prototyping Results (Demo)
+- Data Builder Frame
+  - Can locate specific CSVs in a local directory
+  - Can select which columns to load from CSVs
+  - Can trigger event to create a new frame with plots based on user config
+
+
+To-Do:
+- Create Backend of Visualizer Frame
+  - Data Frame that keeps a time window
+  - Synchronize multiple plot, not just one plot
+  - Plot Tool Bars
+  - UTC to Local Time Switch
+- Clean Up Data Builder Frame UI
+  - Other optional buttons or configurations
 
 ## Timeline / Adjustments
+- Priorities remain the same
+- Next 2 sprints should cover visualizer frame
+- Might be close on UTC to Local Time Switch and lower priority items
