@@ -5,12 +5,13 @@ App.py:
 """
 
 from tkinter import *
-from tkinter import ttk
 from src.Window import Window
+from src.Utils.Constants import DEFAULTPATHTODATASETS, APPNAME
 
+APPNAME='Digi-Vis'
 APPVERSION = '0.0.0.0'
-PATHTODATASETS = './datasets'
+DEFAULTPATHTODATASETS = './datasets'
 
 if __name__ == "__main__":
-    window = Window(PATHTODATASETS)
+    window = Window(APPNAME, DEFAULTPATHTODATASETS)
     window.mainloop()
