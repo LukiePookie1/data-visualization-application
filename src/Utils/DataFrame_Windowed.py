@@ -7,12 +7,18 @@ class DataFrame_Windowed():
 		if colsToKeep:
 			if 'Datetime (UTC)' not in colsToKeep:
 				colsToKeep.append('Datetime (UTC)')
-			self.data = pd.read_csv(filePath, usecols=colsToKeep, parse_dates=['Datetime (UTC)'], index_col='Datetime (UTC)')
+			self.data = pd.read_csv(filePath, usecols=colsToKeep, parse_dates=['Datetime (UTC)'])
+			self.data['Datetime (UTC)'] = pd.to_datetime(self.data['Datetime (UTC)'])
+			self.data.set_index('Datetime (UTC)', inplace=True, drop=False)
+
+
 		else:
-			self.data = pd.read_csv(filePath, parse_dates=['Datetime (UTC)'], index_col='Datetime (UTC)')
+			self.data = pd.read_csv(filePath, parse_dates=['Datetime (UTC)']).set_index('Datetime (UTC)', inplace=True, drop=False)
+			self.data['Datetime (UTC)'] = pd.to_datetime(self.data['Datetime (UTC)'])
+			self.data.set_index('Datetime (UTC)', inplace=True, drop=False)
 
-		self.data.rename(columns={'Datetime (UTC)': 'Datetime'})
 
+		self.data = self.data.rename(columns={'Datetime (UTC)': 'Datetime'})
 		self.filePath = filePath
 		self.startDate_min = self.data['Datetime'].min()
 		self.endDate_max = self.data['Datetime'].max()
@@ -26,14 +32,13 @@ class DataFrame_Windowed():
 			raise Exception('Cannot remove Datetime column from data frame. Required for Time Series.')
 
 		try:
-			self.data.drop(colToDrop, axis=1)
+			self.data.drop(colToDrop, inplace=True, axis=1)
 		except KeyError:
 			print('Column ' + colToDrop + ' not found in dataframe.')
 
 
 	def AddColumn(self, colToAdd):
 		colToAddDF = pd.read_csv(self.filePath, usecols=[colToAdd, 'Datetime (UTC)'])
-
 		self.data[colToAdd] = colToAddDF[colToAdd]
 
 	def UpdateTimeWindows(self, startDate, endDate):
@@ -43,3 +48,12 @@ class DataFrame_Windowed():
 		summaryStats = self.data.describe()
 		return summaryStats
 
+	#for testing purposes
+	def tail(self):
+		print(self.data.tail(5))
+
+	def head(self):
+		print(self.data.head(5))
+
+	def columns(self):
+		print(self.data.columns)
