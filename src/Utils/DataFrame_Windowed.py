@@ -8,13 +8,11 @@ class DataFrame_Windowed():
 			if 'Datetime (UTC)' not in colsToKeep:
 				colsToKeep.append('Datetime (UTC)')
 			self.data = pd.read_csv(filePath, usecols=colsToKeep, parse_dates=['Datetime (UTC)'])
-			self.data['Datetime (UTC)'] = pd.to_datetime(self.data['Datetime (UTC)'])
 			self.data.set_index('Datetime (UTC)', inplace=True, drop=False)
 
 
 		else:
 			self.data = pd.read_csv(filePath, parse_dates=['Datetime (UTC)']).set_index('Datetime (UTC)', inplace=True, drop=False)
-			self.data['Datetime (UTC)'] = pd.to_datetime(self.data['Datetime (UTC)'])
 			self.data.set_index('Datetime (UTC)', inplace=True, drop=False)
 
 
@@ -47,13 +45,3 @@ class DataFrame_Windowed():
 	def Aggregate(self):
 		summaryStats = self.data.describe()
 		return summaryStats
-
-	#for testing purposes
-	def tail(self):
-		print(self.data.tail(5))
-
-	def head(self):
-		print(self.data.head(5))
-
-	def columns(self):
-		print(self.data.columns)
