@@ -9,14 +9,14 @@ class DataBuilderFrame(tk.Frame):
     def __init__(self, pathToDatasets):
         super().__init__(highlightbackground="red", highlightthickness=2)
         self.label = tk.Label(self, text='Data Builder Tab')
-        self.label.pack(ipadx=1, ipady=1)
+        self.label.pack(ipadx=0.5, ipady=0.5)
+#        self.label.pack(ipadx=1)
 
         self.fileSelectorGroup = SelectUserAndDateGroup(self, pathToDatasets)
         self.fileSelectorGroup.pack(anchor=tk.W)
 
         self.button = tk.Button(self, text="Save", command=self.chooseCols)
         self.button.pack(ipadx=1, ipady=1)
-
 
     def chooseCols(self):
         self.pathToCSV = os.path.join(self.fileSelectorGroup.GetPathToFiles(), 'summary.csv')
@@ -34,7 +34,7 @@ class DataBuilderFrame(tk.Frame):
         self.colChooseGroup.destroy()
         self.button.destroy()
         self.dataViewGroup = DisplayData(self, self.CSVData, self.chosenCols)
-        self.dataViewGroup.pack(anchor=tk.W)
+        self.dataViewGroup.pack(fill=tk.BOTH, expand=True)
 
 class SelectUserAndDateGroup(tk.Frame):
     def __init__(self, root, pathToDatasets):
@@ -223,11 +223,9 @@ class DisplayData(tk.Frame):
             self.numOfGraphs -= 1
 
         dateTimeSize = len(self.df["Datetime (UTC)"])
-            
-#        figure, axs = plt.subplots(1, self.numOfGraphs, figsize=(14, 8), sharex=True, sharey=True)
-        figure, axs = plt.subplots(1, self.numOfGraphs, figsize=(14, 9), sharex=True)
-        figure.suptitle("Data Line Chart", size='large', weight='bold')
 
+        figure, axs = plt.subplots(1, self.numOfGraphs, sharex=True)
+        
         chart_type = FigureCanvasTkAgg(figure, master=self)
         
         if len(self.columns) is 2:
@@ -237,6 +235,8 @@ class DisplayData(tk.Frame):
             axs.xaxis.set_major_locator(plt.MaxNLocator(24))
             axs.tick_params(labelrotation=90)
             axs.grid(color='black', alpha=0.13)
+            axs.set_title(self.columns[0])
+            axs.margins(x=0.02, y=0.02)            
             axs.plot(self.df["Datetime (UTC)"], self.df[self.columns[0]], lw=2)
 
         else:
@@ -248,10 +248,11 @@ class DisplayData(tk.Frame):
                     axs[i].xaxis.set_major_locator(plt.MaxNLocator(24))
                     axs[i].tick_params(labelrotation=90)
                     axs[i].grid(color='black', alpha=0.13)
+                    axs[i].set_title(value)
+                    axs[i].margins(x=0.02, y=0.02)
                     axs[i].plot(self.df["Datetime (UTC)"], self.df[value], lw=2)
                     i += 1
 
-#        plt.xticks(rotation='vertical')
-#        plt.grid(which='major', axis='both', alpha=0.35)
-        chart_type.get_tk_widget().pack(expand = 1)
+        plt.tight_layout()
+        chart_type.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
