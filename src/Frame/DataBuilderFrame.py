@@ -206,29 +206,52 @@ class DisplayData(tk.Frame):
         self.root = root
         self.df = CSVData
         self.columns = columns
+        self.numOfGraphs = len(self.columns)        
         self.setupFrameWidget()
-
 
     def readData(self):
         """Read the data from the target CSV to df"""
         columns = ["Datetime (UTC)", "Acc magnitude avg", "Eda avg", "Temp avg"]
         self.df = pd.read_csv(self.pathToCSV, usecols=columns)
 
-
     def setupFrameWidget(self):
         """Create matplotlib graph, plot points, and display to window"""
         if "Datetime (UTC)" in self.columns:
             self.df["Datetime (UTC)"] = pd.to_datetime(self.df["Datetime (UTC)"])
             self.df["Datetime (UTC)"] = self.df["Datetime (UTC)"].dt.strftime('%H:%M:%S')
-        figure = plt.Figure(figsize=(15,10), dpi=100)
-        ax = figure.add_subplot(111)
-        chart_type = FigureCanvasTkAgg(figure, self)
-        chart_type.get_tk_widget().pack()
-        if "Datetime (UTC)" in self.columns:
-            self.df[self.columns].set_index('Datetime (UTC)').plot(rot=0, kind='line', legend=True, ax=ax)
-            ax.set_xlabel('Time (HH:MM:SS)')
+            self.df.sort_values(by=["Datetime (UTC)"], inplace=True)
+            self.numOfGraphs -= 1
+
+        dateTimeSize = len(self.df["Datetime (UTC)"])
+            
+#        figure, axs = plt.subplots(1, self.numOfGraphs, figsize=(14, 8), sharex=True, sharey=True)
+        figure, axs = plt.subplots(1, self.numOfGraphs, figsize=(14, 9), sharex=True)
+        figure.suptitle("Data Line Chart", size='large', weight='bold')
+
+        chart_type = FigureCanvasTkAgg(figure, master=self)
+        
+        if len(self.columns) is 2:
+            self.columns.remove("Datetime (UTC)")
+            axs.set_xlabel("Time (HH:MM:SS)")
+            axs.set_ylabel(self.columns[0])
+            axs.xaxis.set_major_locator(plt.MaxNLocator(24))
+            axs.tick_params(labelrotation=90)
+            axs.grid(color='black', alpha=0.13)
+            axs.plot(self.df["Datetime (UTC)"], self.df[self.columns[0]], lw=2)
+
         else:
-            self.df[self.columns].plot(rot=0, kind='line', legend=True, ax=ax)
-            ax.set_xlabel('Row Number')
-        ax.set_title('Data Line Chart')
-        ax.set_ylabel('Value')
+            i = 0;
+            for value in self.columns:
+                if value != "Datetime (UTC)":
+                    axs[i].set_xlabel('Time (HH:MM:SS)')
+                    axs[i].set_ylabel(value)
+                    axs[i].xaxis.set_major_locator(plt.MaxNLocator(24))
+                    axs[i].tick_params(labelrotation=90)
+                    axs[i].grid(color='black', alpha=0.13)
+                    axs[i].plot(self.df["Datetime (UTC)"], self.df[value], lw=2)
+                    i += 1
+
+#        plt.xticks(rotation='vertical')
+#        plt.grid(which='major', axis='both', alpha=0.35)
+        chart_type.get_tk_widget().pack(expand = 1)
+
