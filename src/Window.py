@@ -7,7 +7,7 @@ APPNAME='Digi-Vis'
 class Window(tk.Tk):
     def __init__(self, pathToDatasets):
         super().__init__()
-        self.geometry('800x600')
+        self.geometry('1200x900')
         self.title(APPNAME)
 
         self.notebook = Notebook(self)

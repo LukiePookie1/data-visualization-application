@@ -9,14 +9,14 @@ class DataBuilderFrame(tk.Frame):
     def __init__(self, pathToDatasets):
         super().__init__(highlightbackground="red", highlightthickness=2)
         self.label = tk.Label(self, text='Data Builder Tab')
-        self.label.pack(ipadx=1, ipady=1)
+        self.label.pack(ipadx=0.5, ipady=0.5)
+#        self.label.pack(ipadx=1)
 
         self.fileSelectorGroup = SelectUserAndDateGroup(self, pathToDatasets)
         self.fileSelectorGroup.pack(anchor=tk.W)
 
         self.button = tk.Button(self, text="Save", command=self.chooseCols)
         self.button.pack(ipadx=1, ipady=1)
-
 
     def chooseCols(self):
         self.pathToCSV = os.path.join(self.fileSelectorGroup.GetPathToFiles(), 'summary.csv')
@@ -34,7 +34,7 @@ class DataBuilderFrame(tk.Frame):
         self.colChooseGroup.destroy()
         self.button.destroy()
         self.dataViewGroup = DisplayData(self, self.CSVData, self.chosenCols)
-        self.dataViewGroup.pack(anchor=tk.W)
+        self.dataViewGroup.pack(fill=tk.BOTH, expand=True)
 
 class SelectUserAndDateGroup(tk.Frame):
     def __init__(self, root, pathToDatasets):
@@ -206,29 +206,53 @@ class DisplayData(tk.Frame):
         self.root = root
         self.df = CSVData
         self.columns = columns
+        self.numOfGraphs = len(self.columns)        
         self.setupFrameWidget()
-
 
     def readData(self):
         """Read the data from the target CSV to df"""
         columns = ["Datetime (UTC)", "Acc magnitude avg", "Eda avg", "Temp avg"]
         self.df = pd.read_csv(self.pathToCSV, usecols=columns)
 
-
     def setupFrameWidget(self):
         """Create matplotlib graph, plot points, and display to window"""
         if "Datetime (UTC)" in self.columns:
             self.df["Datetime (UTC)"] = pd.to_datetime(self.df["Datetime (UTC)"])
             self.df["Datetime (UTC)"] = self.df["Datetime (UTC)"].dt.strftime('%H:%M:%S')
-        figure = plt.Figure(figsize=(15,10), dpi=100)
-        ax = figure.add_subplot(111)
-        chart_type = FigureCanvasTkAgg(figure, self)
-        chart_type.get_tk_widget().pack()
-        if "Datetime (UTC)" in self.columns:
-            self.df[self.columns].set_index('Datetime (UTC)').plot(rot=0, kind='line', legend=True, ax=ax)
-            ax.set_xlabel('Time (HH:MM:SS)')
+            self.df.sort_values(by=["Datetime (UTC)"], inplace=True)
+            self.numOfGraphs -= 1
+
+        dateTimeSize = len(self.df["Datetime (UTC)"])
+
+        figure, axs = plt.subplots(1, self.numOfGraphs, sharex=True)
+        
+        chart_type = FigureCanvasTkAgg(figure, master=self)
+        
+        if len(self.columns) is 2:
+            self.columns.remove("Datetime (UTC)")
+            axs.set_xlabel("Time (HH:MM:SS)")
+            axs.set_ylabel(self.columns[0])
+            axs.xaxis.set_major_locator(plt.MaxNLocator(24))
+            axs.tick_params(labelrotation=90)
+            axs.grid(color='black', alpha=0.13)
+            axs.set_title(self.columns[0])
+            axs.margins(x=0.02, y=0.02)            
+            axs.plot(self.df["Datetime (UTC)"], self.df[self.columns[0]], lw=2)
+
         else:
-            self.df[self.columns].plot(rot=0, kind='line', legend=True, ax=ax)
-            ax.set_xlabel('Row Number')
-        ax.set_title('Data Line Chart')
-        ax.set_ylabel('Value')
+            i = 0;
+            for value in self.columns:
+                if value != "Datetime (UTC)":
+                    axs[i].set_xlabel('Time (HH:MM:SS)')
+                    axs[i].set_ylabel(value)
+                    axs[i].xaxis.set_major_locator(plt.MaxNLocator(24))
+                    axs[i].tick_params(labelrotation=90)
+                    axs[i].grid(color='black', alpha=0.13)
+                    axs[i].set_title(value)
+                    axs[i].margins(x=0.02, y=0.02)
+                    axs[i].plot(self.df["Datetime (UTC)"], self.df[value], lw=2)
+                    i += 1
+
+        plt.tight_layout()
+        chart_type.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
