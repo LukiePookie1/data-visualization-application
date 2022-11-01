@@ -5,8 +5,8 @@ from src.Frame.DataBuilderFrame import DataBuilderFrame
 class Window(tk.Tk):
     def __init__(self, appname, pathToDatasets):
         super().__init__()
-        self.geometry('800x600')
         self.title(appname)
+        self.geometry('1200x900')
 
         self.notebook = Notebook(self)
 
