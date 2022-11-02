@@ -45,3 +45,5 @@ class DataFrame_Windowed():
 	def Aggregate(self):
 		summaryStats = self.data.describe()
 		return summaryStats
+
+
