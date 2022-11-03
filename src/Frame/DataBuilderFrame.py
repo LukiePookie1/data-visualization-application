@@ -40,4 +40,3 @@ class DataBuilderFrame(tk.Frame):
         # Add To Notebook, Maybe Set That Tab as active
         visual_frame = VisualizerFrame(self.notebook, pathToFiles, chosenCols)
         self.notebook.add(visual_frame, text='Visual')
-        visual_frame.pack(fill=tk.BOTH, expand=1)

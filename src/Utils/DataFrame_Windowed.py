@@ -13,9 +13,9 @@ class DataFrame_Windowed():
 			self.data = pd.read_csv(filePath)
 
 		self.data['Datetime (UTC)'] = pd.to_datetime(self.data['Datetime (UTC)'])
-		self.data.set_index('Datetime (UTC)')
-		self.data.sort_index(inplace=True)
+		self.data.sort_values(by=['Datetime (UTC)'], inplace=True)
 		print(self.data.columns)
+		print(self.data['Datetime (UTC)'].dtype)
 		print(self.data.head())
 
 		self.filePath = filePath
@@ -48,7 +48,7 @@ class DataFrame_Windowed():
 
 	def GetDataFrame(self):
 		"""Returns view of data frame between the set """
-		return self.data[self.curStartDate:self.curEndDate]
+		return self.data.loc[(self.data['Datetime (UTC)'] >= self.curStartDate) | (self.data['Datetime (UTC)'] <= self.curEndDate)]
 
 	def Aggregate(self):
 		summaryStats = self.data.describe()

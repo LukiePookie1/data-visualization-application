@@ -30,8 +30,10 @@ class GraphManagerFrame(tk.Frame):
         canvas = FigureCanvasTkAgg(figure, master=self)
         self.canvas_tk = canvas
 
+        print('here 3')
         i = 0
         for column in df.columns:
+            print(column)
             if column != 'Datetime (UTC)':
                 axs[i].set_xlabel('Datetime (UTC)')
                 axs[i].set_ylabel(column)
@@ -40,13 +42,10 @@ class GraphManagerFrame(tk.Frame):
                 axs[i].margins(x=0.02, y=0.02)
                 axs[i].grid(color='black', alpha=0.13)
                 axs[i].xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d %H:%M:%S'))
-                axs[i].set_title(column)
-                axs[i].plot(df['Datetime (UTC)'].head(), df[column].head(), lw=2)
+                axs[i].plot(df['Datetime (UTC)'].head(5), df[column].head(5), lw=2)
                 i += 1
 
-        plt.tight_layout()
         canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
-        canvas.draw()
 
 class VisualizerFrame(tk.Frame):
     """Responsible for displaying all plots and synchronizing callbacks in a frame"""
@@ -62,4 +61,4 @@ class VisualizerFrame(tk.Frame):
         self.numOfGraphs = len(self.dependentVariables)
 
         self.graphManagerFrame = GraphManagerFrame(self, self.summaryCsvPath, chosenCols)
-        self.graphManagerFrame.pack()
+        self.graphManagerFrame.pack(fill=tk.BOTH, expand=1)
