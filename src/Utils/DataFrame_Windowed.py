@@ -1,5 +1,6 @@
 import pandas as pd
 import logging
+
 """Revisit this class after prototype"""
 class DataFrame_Windowed():
 	def __init__(self, filePath, colsToKeep=None):
@@ -7,22 +8,25 @@ class DataFrame_Windowed():
 		if colsToKeep:
 			if 'Datetime (UTC)' not in colsToKeep:
 				colsToKeep.append('Datetime (UTC)')
-			self.data = pd.read_csv(filePath, usecols=colsToKeep, parse_dates=['Datetime (UTC)'], index_col='Datetime (UTC)')
+			self.data = pd.read_csv(filePath, usecols=colsToKeep)
 		else:
-			self.data = pd.read_csv(filePath, parse_dates=['Datetime (UTC)'], index_col='Datetime (UTC)')
+			self.data = pd.read_csv(filePath)
 
-		self.data.rename(columns={'Datetime (UTC)': 'Datetime'})
+		self.data['Datetime (UTC)'] = pd.to_datetime(self.data['Datetime (UTC)'])
+		self.data.set_index('Datetime (UTC)')
+		self.data.sort_index(inplace=True)
+		print(self.data.columns)
+		print(self.data.head())
 
 		self.filePath = filePath
-		self.startDate_min = self.data['Datetime'].min()
-		self.endDate_max = self.data['Datetime'].max()
-		self.startDate = self.startDate_min
-		self.endDate = self.endDate_max
-		self.localTime = False
+		self.startDate_min = self.data['Datetime (UTC)'].min()
+		self.endDate_max = self.data['Datetime (UTC)'].max()
+		self.curStartDate = self.startDate_min
+		self.curEndDate = self.endDate_max
 
 	
 	def RemoveColumn(self, colToDrop):
-		if colToDrop == 'Datetime':
+		if colToDrop == 'Datetime (UTC)':
 			raise Exception('Cannot remove Datetime column from data frame. Required for Time Series.')
 
 		try:
@@ -33,11 +37,18 @@ class DataFrame_Windowed():
 
 	def AddColumn(self, colToAdd):
 		colToAddDF = pd.read_csv(self.filePath, usecols=[colToAdd, 'Datetime (UTC)'])
-
 		self.data[colToAdd] = colToAddDF[colToAdd]
 
+
 	def UpdateTimeWindows(self, startDate, endDate):
-		self.data = self.data.loc[startDate:endDate]
+		"""Update the start and end date of the data frame. Note this does not update views"""
+		self.curStartDate = startDate
+		self.curEndDate = endDate
+
+
+	def GetDataFrame(self):
+		"""Returns view of data frame between the set """
+		return self.data[self.curStartDate:self.curEndDate]
 
 	def Aggregate(self):
 		summaryStats = self.data.describe()

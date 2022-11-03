@@ -10,9 +10,6 @@ class Window(tk.Tk):
 
         self.notebook = Notebook(self)
 
-        data_builder_tab = DataBuilderFrame(self, pathToDatasets)
+        data_builder_tab = DataBuilderFrame(self.notebook, pathToDatasets)
         self.notebook.add(data_builder_tab, text='Builder')
         self.notebook.pack(fill=tk.BOTH, expand=1)
-
-    def AddTab(self, tab, text):
-        self.notebook.add(tab, text=text)
