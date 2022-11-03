@@ -4,6 +4,7 @@ from src.Frame.DataBuilderFrame import DataBuilderFrame
 
 class Window(tk.Tk):
     def __init__(self, appname, pathToDatasets):
+        """Creates a top-level window for the application responsible for the notebook and window geometry."""
         super().__init__()
         self.title(appname)
         self.geometry('1200x900')

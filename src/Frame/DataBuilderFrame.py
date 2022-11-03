@@ -6,6 +6,7 @@ from src.Frame.VisualizerFrame import VisualizerFrame
 class DataBuilderFrame(tk.Frame):
     """ User interface for configuring dataset and options to load in"""
     def __init__(self, notebook, pathToDatasets):
+        """Creates a frame responsible for handling user input and selection for loading datasets"""
         super().__init__(highlightbackground="red", highlightthickness=2)
 
         self.notebook = notebook
