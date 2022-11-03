@@ -13,11 +13,8 @@ class DataFrame_Windowed():
 			self.data = pd.read_csv(filePath)
 
 		self.data['Datetime (UTC)'] = pd.to_datetime(self.data['Datetime (UTC)'])
+		self.data['Datetime (UTC)'] = self.data["Datetime (UTC)"].dt.strftime('%H:%M:%S')
 		self.data.sort_values(by=['Datetime (UTC)'], inplace=True)
-		print(self.data.columns)
-		print(self.data['Datetime (UTC)'].dtype)
-		print(self.data.head())
-
 		self.filePath = filePath
 		self.startDate_min = self.data['Datetime (UTC)'].min()
 		self.endDate_max = self.data['Datetime (UTC)'].max()
