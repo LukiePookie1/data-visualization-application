@@ -2,17 +2,15 @@ import tkinter as tk
 from tkinter.ttk import Notebook
 from src.Frame.DataBuilderFrame import DataBuilderFrame
 
-APPNAME='Digi-Vis'
-
 class Window(tk.Tk):
-    def __init__(self, pathToDatasets):
+    def __init__(self, appname, pathToDatasets):
+        """Creates a top-level window for the application responsible for the notebook and window geometry."""
         super().__init__()
+        self.title(appname)
         self.geometry('1200x900')
-        self.title(APPNAME)
 
         self.notebook = Notebook(self)
 
-        data_builder_tab = DataBuilderFrame(pathToDatasets)
+        data_builder_tab = DataBuilderFrame(self.notebook, pathToDatasets)
         self.notebook.add(data_builder_tab, text='Builder')
         self.notebook.pack(fill=tk.BOTH, expand=1)
-
