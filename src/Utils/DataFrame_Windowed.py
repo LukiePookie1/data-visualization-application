@@ -47,6 +47,16 @@ class DataFrame_Windowed():
 		"""Returns view of data frame between the set """
 		return self.data.loc[(self.data['Datetime (UTC)'] >= self.curStartDate) | (self.data['Datetime (UTC)'] <= self.curEndDate)]
 
+
+	def GetSelectedColumns(self):
+		"""Returns a list of selected columns excluding Datetime"""
+		result = []
+		for col in self.data.columns:
+			if col != 'Datetime (UTC)':
+				result.append(col)
+		return result
+
+
 	def Aggregate(self):
 		summaryStats = self.data.describe()
 		return summaryStats

@@ -6,7 +6,7 @@ from src.Frame.VisualizerFrame import VisualizerFrame
 class DataBuilderFrame(tk.Frame):
     """ User interface for configuring dataset and options to load in"""
     def __init__(self, notebook, pathToDatasets):
-        super().__init__(notebook, highlightbackground="red", highlightthickness=2)
+        super().__init__(highlightbackground="red", highlightthickness=2)
 
         self.notebook = notebook
 
@@ -39,4 +39,5 @@ class DataBuilderFrame(tk.Frame):
         # Create Visual Frame
         # Add To Notebook, Maybe Set That Tab as active
         visual_frame = VisualizerFrame(self.notebook, pathToFiles, chosenCols)
+        visual_frame.pack(fill=tk.BOTH, expand=True)
         self.notebook.add(visual_frame, text='Visual')
