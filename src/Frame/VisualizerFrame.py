@@ -1,8 +1,11 @@
 import tkinter as tk
 from os import path
+import pandas as pd
 from src.Utils.DataFrame_Windowed import DataFrame_Windowed
 from src.Utils.Constants import SUMMARYFILENAME, METADATAFILENAME
 import matplotlib.pyplot as plt
+import matplotlib.dates as dates
+from matplotlib.widgets import RangeSlider
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class GraphManager():
@@ -21,6 +24,15 @@ class GraphManager():
 
         figure, axs = plt.subplots(1, self.numberOfGraphs, sharex=True)
 
+        print("Before: ", df['Datetime (UTC)'].iloc[-1])
+        df['Datetime (UTC)'] = pd.to_datetime(df['Datetime (UTC)'], utc=True, format="%H:%M:%S")
+        #pd.to_datetime(df['Datetime (UTC)'], utc=True, inplace=True)
+        print("After: ", df['Datetime (UTC)'].iloc[-1])
+
+#        df['Datetime (UTC)'] = dates.date2num(df['Datetime (UTC)'])
+        
+        xlocator = dates.HourLocator(byhour=range(0, 24, 1))
+
         self.figure = figure
         self.axs = axs
 
@@ -34,6 +46,8 @@ class GraphManager():
                 axs[i].tick_params(labelrotation=90)
                 axs[i].margins(x=0.02, y=0.02)
                 axs[i].grid(color='black', alpha=0.13)
+                axs[i].xaxis.set_major_locator(xlocator)
+                axs[i].xaxis.set_major_formatter(dates.DateFormatter('%H:%M:%S', tz='UTC'))
                 axs[i].plot(df['Datetime (UTC)'], df[column], lw=2)
                 i += 1
             elif column != 'Datetime (UTC)':
@@ -43,6 +57,8 @@ class GraphManager():
                 axs.tick_params(labelrotation=90)
                 axs.margins(x=0.02, y=0.02)
                 axs.grid(color='black', alpha=0.13)
+                axs.xaxis.set_major_locator(xlocator)
+                axs.xaxis.set_major_formatter(dates.DateFormatter('%H:%M:%S', tz='UTC'))                
                 axs.plot(df['Datetime (UTC)'], df[column], lw=2)
 
         plt.tight_layout()
