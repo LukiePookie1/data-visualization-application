@@ -44,6 +44,7 @@ class DataFrame_Windowed():
 
 	def Aggregate(self):
 		summaryStats = self.data.describe()
+		summaryStats = summaryStats[['Acc magnitude avg','Eda avg','Temp avg', 'Movement intensity', 'Steps count','Rest']]
 		return summaryStats
 
 
