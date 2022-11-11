@@ -1,70 +1,59 @@
-from tkinter import *
-import pandas as pd
-import sys
-from pathlib import Path
-
-
-#Might be a better way to do this - this was more or less how I was taught
-path_root = Path(__file__).parents[1]
-sys.path.append(str(path_root))
-print(path_root)
-from Utils.DataFrame_Windowed import DataFrame_Windowed
-
-
- #TKinter table frame class
-class Table:
-     
-    def __init__(self,root):
-         
-        # code for creating table
-        for i in range(total_rows):
-            for j in range(total_columns):
-                 
-                self.e = Entry(root, width=10, fg='blue',
-                               font=('Arial',12,'bold'))
-                 
-                self.e.grid(row=i, column=j)
-                self.e.insert(END, summaryStats[i][j])
- 
+import tkinter as tk
+from tkinter import ttk
+from os import path
+from src.Utils.DataFrame_Windowed import DataFrame_Windowed
+from src.Utils.Constants import SUMMARYFILENAME, METADATAFILENAME
 
 
 
+class TableFrame(tk.Frame):
 
-#Not sure how exactly this will be pulled in from file manager - so leaving this hard coded for now
-data = DataFrame_Windowed('summary.csv',colsToKeep=['Datetime (UTC)', 'Timezone (minutes)', 'Unix Timestamp (UTC)',
-       'Acc magnitude avg', 'Eda avg', 'Temp avg', 'Movement intensity',
-       'Steps count', 'Rest', 'On Wrist'])
+    #Init with default to all numeric columns
+    def __init__(self,root, pathToFiles:str, chosenCols=['Acc magnitude avg','Eda avg','Temp avg','Movement intensity','Steps count','Rest','On Wrist']):
 
-#Get aggregated data frame
-summaryStats = data.Aggregate()
+        #Path to chosen summary csv
+        self.summaryCsvPath = path.join(pathToFiles, SUMMARYFILENAME)
 
-#Store columns to access later
-dfCols = summaryStats.columns
+        #initialize tree
+        super().__init__(root)
+        self.root = root
+        self.tree = self.createTable()
 
-# find total number of rows and columns in list...will be adding 1 column to the dataset for the stat names
-total_rows = summaryStats.shape[0]
-total_columns = summaryStats.shape[1]+1
 
-#Convert to appropriate format - add column for the count type names in the 0th column
-titles = ['count','mean','std','min','25%','50%','75%','max']
-summaryStats.insert(loc= 0, column = 'type', value=titles)
 
-#Convert data to list - easier to import into Tkinter frame
-summaryStats = summaryStats.values.tolist()
+    def createTable(self):
 
-#Add row for column names in dataset. 1st one must be blank to match style of table
-summaryStatsTest = ['']
-for col in dfCols:
-    summaryStatsTest.append(col)
+        #read data in
+        data = DataFrame_Windowed(summaryCsvPath,colsToKeep=chosenCols)
 
-#Set 1st row to be the column names
-summaryStats[0] = summaryStatsTest
 
-# create root window
-root = Tk()
+        #Aggregate data, round to 2 decimal places
+        summaryStats = data.Aggregate().round(2)
 
-#create table
-t = Table(root)
+        #Store column in list to loop over later
+        dfCols = summaryStats.columns
 
-#run loop
-root.mainloop()
+        #Convert to appropriate format - add column for the count type names in the 0th column
+        rowHeaders = ['Count','Mean','STD','Min','25%','50%','75%','Max']
+        summaryStats.insert(loc= 0, column = 'type', value=rowHeaders)
+
+        #Convert data to list - easier to import into Tkinter frame
+        summaryStats = summaryStats.values.tolist()
+
+        #insert empty space so top left corner is empty, convert column index to list
+        dfCols = list(dfCols.insert(0,''))
+
+        #create tree
+        tree = ttk.Treeview(self, columns = dfCols, show='headings')
+
+        #create headers, set column width
+        for colHead in dfCols:
+            tree.heading(colHead,text=colHead)
+            tree.column(column = colHead,width=120)
+
+        #add data
+        for obs in summaryStats:
+            tree.insert('', tk.END, values=obs)
+
+        #create tree grid, place on root window
+        tree.grid(row=0,column=0,sticky='nsew')
