@@ -57,3 +57,5 @@ class TableFrame(tk.Frame):
 
         #create tree grid, place on root window
         tree.grid(row=0,column=0,sticky='nsew')
+
+        return tree
