@@ -1,5 +1,6 @@
 import pandas as pd
 import logging
+
 """Revisit this class after prototype"""
 class DataFrame_Windowed():
 	def __init__(self, filePath, colsToKeep=None):
@@ -7,26 +8,22 @@ class DataFrame_Windowed():
 		if colsToKeep:
 			if 'Datetime (UTC)' not in colsToKeep:
 				colsToKeep.append('Datetime (UTC)')
-			self.data = pd.read_csv(filePath, usecols=colsToKeep, parse_dates=['Datetime (UTC)'])
-			self.data.set_index('Datetime (UTC)', inplace=True, drop=False)
-
-
+			self.data = pd.read_csv(filePath, usecols=colsToKeep)
 		else:
-			self.data = pd.read_csv(filePath, parse_dates=['Datetime (UTC)']).set_index('Datetime (UTC)', inplace=True, drop=False)
-			self.data.set_index('Datetime (UTC)', inplace=True, drop=False)
+			self.data = pd.read_csv(filePath)
 
-
-		self.data = self.data.rename(columns={'Datetime (UTC)': 'Datetime'})
+		self.data['Datetime (UTC)'] = pd.to_datetime(self.data['Datetime (UTC)'])
+		self.data['Datetime (UTC)'] = self.data["Datetime (UTC)"].dt.strftime('%H:%M:%S')
+		self.data.sort_values(by=['Datetime (UTC)'], inplace=True)
 		self.filePath = filePath
-		self.startDate_min = self.data['Datetime'].min()
-		self.endDate_max = self.data['Datetime'].max()
-		self.startDate = self.startDate_min
-		self.endDate = self.endDate_max
-		self.localTime = False
+		self.startDate_min = self.data['Datetime (UTC)'].min()
+		self.endDate_max = self.data['Datetime (UTC)'].max()
+		self.curStartDate = self.startDate_min
+		self.curEndDate = self.endDate_max
 
 	
 	def RemoveColumn(self, colToDrop):
-		if colToDrop == 'Datetime':
+		if colToDrop == 'Datetime (UTC)':
 			raise Exception('Cannot remove Datetime column from data frame. Required for Time Series.')
 
 		try:
@@ -39,8 +36,26 @@ class DataFrame_Windowed():
 		colToAddDF = pd.read_csv(self.filePath, usecols=[colToAdd, 'Datetime (UTC)'])
 		self.data[colToAdd] = colToAddDF[colToAdd]
 
+
 	def UpdateTimeWindows(self, startDate, endDate):
-		self.data = self.data.loc[startDate:endDate]
+		"""Update the start and end date of the data frame. Note this does not update views"""
+		self.curStartDate = startDate
+		self.curEndDate = endDate
+
+
+	def GetDataFrame(self):
+		"""Returns view of data frame between the set """
+		return self.data.loc[(self.data['Datetime (UTC)'] >= self.curStartDate) | (self.data['Datetime (UTC)'] <= self.curEndDate)]
+
+
+	def GetSelectedColumns(self):
+		"""Returns a list of selected columns excluding Datetime"""
+		result = []
+		for col in self.data.columns:
+			if col != 'Datetime (UTC)':
+				result.append(col)
+		return result
+
 
 	def Aggregate(self):
 		summaryStats = self.data.describe()
