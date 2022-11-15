@@ -27,7 +27,7 @@ class DataFrame_Windowed():
 			raise Exception('Cannot remove Datetime column from data frame. Required for Time Series.')
 
 		try:
-			self.data.drop(colToDrop, axis=1)
+			self.data.drop(colToDrop, inplace=True, axis=1)
 		except KeyError:
 			print('Column ' + colToDrop + ' not found in dataframe.')
 
@@ -59,5 +59,7 @@ class DataFrame_Windowed():
 
 	def Aggregate(self):
 		summaryStats = self.data.describe()
+		summaryStats = summaryStats[['Acc magnitude avg','Eda avg','Temp avg', 'Movement intensity', 'Steps count','Rest']]
 		return summaryStats
+
 
