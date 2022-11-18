@@ -26,10 +26,10 @@ class GraphManager():
 
         figure, axs = plt.subplots(1, self.numberOfGraphs, sharex=True)
 
-        print("Before: ", df['Datetime (UTC)'].iloc[-1])
-        df['Datetime (UTC)'] = pd.to_datetime(df['Datetime (UTC)'], utc=True, format="%H:%M:%S")
+        print("Before: ", self.df['Datetime (UTC)'].iloc[-1])
+        self.df['Datetime (UTC)'] = pd.to_datetime(self.df['Datetime (UTC)'], utc=True, format="%H:%M:%S")
         #pd.to_datetime(df['Datetime (UTC)'], utc=True, inplace=True)
-        print("After: ", df['Datetime (UTC)'].iloc[-1])
+        print("After: ", self.df['Datetime (UTC)'].iloc[-1])
 
 #        df['Datetime (UTC)'] = dates.date2num(df['Datetime (UTC)'])
         
