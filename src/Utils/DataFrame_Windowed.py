@@ -1,5 +1,5 @@
 import pandas as pd
-import logging
+from .Constants import TIME_SERIES_COLUMNS
 
 """Revisit this class after prototype"""
 class DataFrame_Windowed():
@@ -59,7 +59,7 @@ class DataFrame_Windowed():
 
 	def Aggregate(self):
 		summaryStats = self.data.describe()
-		summaryStats = summaryStats[['Acc magnitude avg','Eda avg','Temp avg', 'Movement intensity', 'Steps count','Rest']]
+		summaryStats = summaryStats[[col for col in self.data.columns if col in TIME_SERIES_COLUMNS]]
 		return summaryStats
 
 
