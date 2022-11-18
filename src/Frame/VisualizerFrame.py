@@ -4,9 +4,11 @@ import pandas as pd
 from src.Utils.DataFrame_Windowed import DataFrame_Windowed
 from src.Utils.Constants import SUMMARYFILENAME, METADATAFILENAME
 import matplotlib.pyplot as plt
+import pandas as pd
+from datetime import datetime, timedelta
 import matplotlib.dates as dates
-from matplotlib.widgets import RangeSlider
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.widgets import RangeSlider
 
 class GraphManager():
     """Responsible for managing a set of plots"""
@@ -17,8 +19,8 @@ class GraphManager():
 
     def SetupGraphs(self):
         """Create matplotlib graph, plot points, and display to window"""
-        df = self.df_windowed.GetDataFrame()
-
+        self.df = self.df_windowed.GetDataFrame()
+        
         self.numberOfGraphs = len(self.df_windowed.GetSelectedColumns())
         print(f'Number of Graphs Generated: {self.numberOfGraphs}')
 
@@ -36,33 +38,83 @@ class GraphManager():
         self.figure = figure
         self.axs = axs
 
-        i = 0
-        for column in df.columns:
-            print(column)
-            if column != 'Datetime (UTC)' and self.numberOfGraphs > 1:
-                axs[i].set_xlabel('Time (Hour:Min:Sec)')
-                axs[i].set_ylabel(column)
-                axs[i].xaxis.set_major_locator(plt.MaxNLocator(24))
-                axs[i].tick_params(labelrotation=90)
-                axs[i].margins(x=0.02, y=0.02)
-                axs[i].grid(color='black', alpha=0.13)
-                axs[i].xaxis.set_major_locator(xlocator)
-                axs[i].xaxis.set_major_formatter(dates.DateFormatter('%H:%M:%S', tz='UTC'))
-                axs[i].plot(df['Datetime (UTC)'], df[column], lw=2)
-                i += 1
-            elif column != 'Datetime (UTC)':
-                axs.set_xlabel('Time (Hour:Min:Sec)')
-                axs.set_ylabel(column)
-                axs.xaxis.set_major_locator(plt.MaxNLocator(24))
-                axs.tick_params(labelrotation=90)
-                axs.margins(x=0.02, y=0.02)
-                axs.grid(color='black', alpha=0.13)
-                axs.xaxis.set_major_locator(xlocator)
-                axs.xaxis.set_major_formatter(dates.DateFormatter('%H:%M:%S', tz='UTC'))                
-                axs.plot(df['Datetime (UTC)'], df[column], lw=2)
+        self.df['Datetime (UTC)'] = pd.to_datetime(self.df['Datetime (UTC)'], format="%H:%M:%S")
+>>>>>>> 567c360 (Added the working RangeSelector)
 
+        print("type: ", self.df['Datetime (UTC)'].dtype)
+
+        self.df.sort_values('Datetime (UTC)', inplace=True)
+        self.df.reset_index(drop=True, inplace=True)
+
+        #For the slider steps
+        self.granularity = 5 # in minutes
+        
+        #This computes a date2num 1 minute step
+        stepVal = dates.date2num(datetime(2000, 1, 1, hour=0, minute=1, second=0)) - dates.date2num(datetime(2000, 1, 1, hour=0, minute=0, second=0))
+        
+        self.sliderax = figure.add_axes([0.3, 0.05, 0.4, 0.04])
+        self.slider = RangeSlider(self.sliderax, "Threshold", dates.date2num(self.df['Datetime (UTC)']).min(), dates.date2num(self.df['Datetime (UTC)']).max() - (2 * stepVal), valstep=stepVal * self.granularity, valinit=[dates.date2num(self.df['Datetime (UTC)']).min(), dates.date2num(self.df['Datetime (UTC)']).max()])
+        
+        i = 0
+        for column in self.df.columns:
+            if column != 'Datetime (UTC)' and self.numberOfGraphs > 1:
+                self.axs[i].set_xlabel('Time (Hour:Min:Sec)')
+                self.axs[i].set_ylabel(column)
+                self.axs[i].xaxis.set_major_locator(plt.MaxNLocator(24))
+                self.axs[i].tick_params(labelrotation=90)
+                self.axs[i].margins(x=0.02, y=0.02)
+                self.axs[i].grid(color='black', alpha=0.13)
+                #self.axs[i].plot(self.df['Datetime (UTC)'], self.df[column], lw=2)                
+                self.axs[i].plot(self.df['Datetime (UTC)'].dt.strftime("%H:%M:%S"), self.df[column], lw=2)
+                i += 1
+                
+            elif column != 'Datetime (UTC)':
+                self.axs.set_xlabel('Time (Hour:Min:Sec)')
+                self.axs.set_ylabel(column)
+                self.axs.xaxis.set_major_locator(plt.MaxNLocator(24))
+                self.axs.tick_params(labelrotation=90)
+                self.axs.margins(x=0.02, y=0.02)
+                self.axs.grid(color='black', alpha=0.13)
+                #self.axs.plot(self.df['Datetime (UTC)'], self.df[column], lw=2)                
+                self.axs.plot(self.df['Datetime (UTC)'].dt.strftime("%H:%M:%S"), self.df[column], lw=2)
+
+        def update(val):
+            i = 0
+            lValRounded = dates.num2date(val[0])
+            lValRounded = (lValRounded.replace(second=0, minute=lValRounded.minute, hour=lValRounded.hour) + timedelta(lValRounded.second // 30)).strftime("%H:%M:%S")
+            rValRounded = dates.num2date(val[1])
+            rValRounded = (rValRounded.replace(second=0, minute=rValRounded.minute, hour=rValRounded.hour) - timedelta(rValRounded.second // 30)).strftime("%H:%M:%S")            
+
+            testerLim = self.df[self.df['Datetime (UTC)'].dt.strftime("%H:%M:%S") == lValRounded]
+
+            #Protects from missing values
+            if not testerLim.empty:
+                leftLim = testerLim.index[0] + 1
+            else:
+                leftLim = False
+                
+            testerLim = self.df[self.df['Datetime (UTC)'].dt.strftime("%H:%M:%S") == rValRounded]
+
+            #Protects from missing values
+            if not testerLim.empty:
+                rightLim = testerLim.index[0]
+            else:
+                rightLim = False
+
+            for column in self.df.columns:
+                if column != 'Datetime (UTC)' and self.numberOfGraphs > 1:
+                    if leftLim and rightLim:
+                        self.axs[i].set_xlim(left=leftLim, right=rightLim)
+                    i += 1
+                    
+                elif column != 'Datetime (UTC)':
+                    if leftLim and rightLim:
+                        self.axs.set_xlim(left=leftLim, right=rightLim)
+
+            
+        self.slider.on_changed(update)
         plt.tight_layout()
-        canvas = FigureCanvasTkAgg(figure, master=self.root)
+        canvas = FigureCanvasTkAgg(self.figure, master=self.root)
         canvas.draw()
         self.canvas = canvas
 
