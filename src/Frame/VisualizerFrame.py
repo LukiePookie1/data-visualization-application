@@ -17,6 +17,7 @@ class GraphManager():
         self.df_windowed = DataFrame_Windowed(pathToSummaryCsv, chosenCols)
         self.SetupGraphs()
 
+
     def SetupGraphs(self):
         """Create matplotlib graph, plot points, and display to window"""
         self.df = self.df_windowed.GetDataFrame()
@@ -116,6 +117,7 @@ class GraphManager():
         canvas = FigureCanvasTkAgg(self.figure, master=self.root)
         canvas.draw()
         self.canvas = canvas
+
 
     def GetCanvas(self):
         return self.canvas

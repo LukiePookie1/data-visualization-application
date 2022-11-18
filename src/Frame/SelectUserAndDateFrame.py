@@ -7,23 +7,26 @@ class SelectUserAndDateFrame(tk.Frame):
         if not os.path.isdir(pathToDatasets):
             raise Exception('Path to Datasets: ' + pathToDatasets + ' does not exist or is not a directory.')
 
-        super().__init__(root, highlightbackground="green", highlightthickness=2)
+        super().__init__(root, highlightbackground="black", highlightthickness=0.5)
         self.root = root
         self.pathToDatasets = pathToDatasets
         self.pathToPatients = None
         self.pathToFiles = None
 
+        self.label = tk.Label(self, text='Select Patient Date and ID')
+        self.label.pack(side=tk.TOP, expand=False, fill=tk.NONE)
+
         self.dateList = []
         self.dateListVar = tk.StringVar(value=self.dateList)
         self.UpdateDateOptions()
         self.dateListbox = tk.Listbox(self, selectmode=tk.SINGLE, listvariable=self.dateListVar, exportselection=False)
-        self.dateListbox.pack(side=tk.LEFT, expand=tk.NO, fill=tk.BOTH)
+        self.dateListbox.pack(side=tk.LEFT, expand=False, fill=tk.BOTH)
         self.dateListbox.bind('<<ListboxSelect>>', self.OnDateSelected)
 
         self.patientList = []
         self.patientListVar = tk.StringVar(value=self.patientList)
         self.patientListbox = tk.Listbox(self, selectmode=tk.SINGLE, listvariable=self.patientListVar, exportselection=False)
-        self.patientListbox.pack(side=tk.RIGHT, expand=tk.NO, fill=tk.BOTH)
+        self.patientListbox.pack(side=tk.RIGHT, expand=False, fill=tk.BOTH)
         self.patientListbox.bind('<<ListboxSelect>>', self.OnPatientSelected)
 
 
@@ -73,6 +76,6 @@ class SelectUserAndDateFrame(tk.Frame):
         if self.pathToFiles:
             return str(self.pathToFiles)
         else:
-            print('No path available from data builder panel.')
+            print('Warning: No path available from data builder panel. Notifying User...')
             return None
 

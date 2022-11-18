@@ -12,7 +12,7 @@ class TableFrame(tk.Frame):
         self.chosenCols = chosenCols
         self.existingDf = existingDf
 
-        super().__init__(root)
+        super().__init__(root, highlightbackground='blue', highlightthickness=2)
         self.root = root
         self.tree = self.createTable()
 
@@ -53,6 +53,6 @@ class TableFrame(tk.Frame):
             tree.insert('', tk.END, values=obs)
 
         #create tree grid, place on root window
-        tree.grid(row=0, column=0, sticky='nsew')
+        tree.pack(side=tk.TOP, fill=tk.BOTH, expand=False)
 
         return tree
