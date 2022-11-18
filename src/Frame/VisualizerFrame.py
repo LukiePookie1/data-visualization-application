@@ -39,7 +39,6 @@ class GraphManager():
         self.axs = axs
 
         self.df['Datetime (UTC)'] = pd.to_datetime(self.df['Datetime (UTC)'], format="%H:%M:%S")
->>>>>>> 567c360 (Added the working RangeSelector)
 
         print("type: ", self.df['Datetime (UTC)'].dtype)
 
