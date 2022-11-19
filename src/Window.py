@@ -12,5 +12,5 @@ class Window(tk.Tk):
         self.notebook = Notebook(self)
 
         data_builder_tab = DataBuilderFrame(self.notebook, pathToDatasets)
-        self.notebook.add(data_builder_tab, text='Builder')
-        self.notebook.pack(fill=tk.BOTH, expand=1)
+        self.notebook.add(data_builder_tab, text='Data Builder')
+        self.notebook.pack(fill=tk.BOTH, expand=True)
