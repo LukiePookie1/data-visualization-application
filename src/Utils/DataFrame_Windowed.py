@@ -1,5 +1,5 @@
 import pandas as pd
-import logging
+from .Constants import TIME_SERIES_COLUMNS
 
 """Revisit this class after prototype"""
 class DataFrame_Windowed():
@@ -27,7 +27,7 @@ class DataFrame_Windowed():
 			raise Exception('Cannot remove Datetime column from data frame. Required for Time Series.')
 
 		try:
-			self.data.drop(colToDrop, axis=1)
+			self.data.drop(colToDrop, inplace=True, axis=1)
 		except KeyError:
 			print('Column ' + colToDrop + ' not found in dataframe.')
 
@@ -59,5 +59,7 @@ class DataFrame_Windowed():
 
 	def Aggregate(self):
 		summaryStats = self.data.describe()
+		summaryStats = summaryStats[[col for col in self.data.columns if col in TIME_SERIES_COLUMNS]]
 		return summaryStats
+
 
