@@ -12,8 +12,15 @@ class DataFrame_Windowed():
 		else:
 			self.data = pd.read_csv(filePath)
 
+		self.timeZone = self.data.loc[0].at['Timezone (minutes)']
+		self.data['Datetime (Local)'] = pd.to_datetime(self.data['Datetime (UTC)']) - pd.DateOffset(minutes = int(self.timeZone))
+		self.data['Datetime (Local)'] = self.data['Datetime (Local)'].dt.strftime('%H:%M:%S')
+		
+
 		self.data['Datetime (UTC)'] = pd.to_datetime(self.data['Datetime (UTC)'])
-		self.data['Datetime (UTC)'] = self.data["Datetime (UTC)"].dt.strftime('%H:%M:%S')
+		self.data['Datetime (UTC)'] = self.data['Datetime (UTC)'].dt.strftime('%H:%M:%S')
+		
+
 		self.data.sort_values(by=['Datetime (UTC)'], inplace=True)
 		self.filePath = filePath
 		self.startDate_min = self.data['Datetime (UTC)'].min()
