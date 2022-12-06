@@ -15,6 +15,8 @@ class TableFrame(tk.Frame):
         super().__init__(root, highlightbackground='blue', highlightthickness=2)
         self.root = root
         self.tree = self.createTable()
+        self.patientId = self.fileSelectorFrame.GetPatientId()
+        self.dateLabel = str(self.startDate_min) + "-" + str(self.endDate_max)
 
 
     def createTable(self):
@@ -42,6 +44,10 @@ class TableFrame(tk.Frame):
 
         #create tree
         tree = ttk.Treeview(self, columns=dfCols, show='headings')
+
+        #Title for tree
+        titleTemp = 'Summary stats for ' + patientId + "(" + dateLabel + ")"
+        tree.title(titleTemp)
 
         #create headers, set column width
         for colHead in dfCols:

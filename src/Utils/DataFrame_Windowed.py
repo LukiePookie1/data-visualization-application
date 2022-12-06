@@ -20,8 +20,7 @@ class DataFrame_Windowed():
 		self.endDate_max = self.data['Datetime (UTC)'].max()
 		self.curStartDate = self.startDate_min
 		self.curEndDate = self.endDate_max
-		self.patientId = self.fileSelectorFrame.GetPatientId()
-		self.dateLabel = str(self.startDate_min) + "-" + str(self.endDate_max)
+
 
 
 	
