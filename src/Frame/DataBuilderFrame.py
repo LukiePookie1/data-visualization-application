@@ -51,6 +51,7 @@ class DataBuilderFrame(tk.Frame):
         """Button Command Callback To Generate a New Visual Based on User Config"""
         pathToFiles = self.fileSelectorFrame.GetPathToFiles()
         chosenCols = self.columnSelectorFrame.GetChosenColumns()
+        patientId = self.fileSelectorFrame.GetPatientId()
 
         if not pathToFiles:
             messagebox.showwarning('Data Builder Failed', 'Must select a patient date and id (both should highlight blue).')
