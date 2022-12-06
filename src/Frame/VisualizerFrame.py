@@ -16,8 +16,6 @@ class GraphManager():
         self.root = root
         self.df_windowed = DataFrame_Windowed(pathToSummaryCsv, chosenCols)
         self.SetupGraphs()
-        self.patientId = self.fileSelectorFrame.GetPatientId()
-        self.dateLabel = str(self.startDate_min) + "-" + str(self.endDate_max)
 
 
     def SetupGraphs(self):
@@ -30,7 +28,7 @@ class GraphManager():
         figure, axs = plt.subplots(1, self.numberOfGraphs, sharex=True)
 
         #Set title
-        titleTemp = 'Summary stats for ' + patientId + "(" + dateLabel + ")"
+        titleTemp = 'Summary stats for ' + self.patientId
         axs.set_title(titleTemp)
 
         print("Before: ", self.df['Datetime (UTC)'].iloc[-1])
