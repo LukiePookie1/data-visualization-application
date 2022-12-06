@@ -6,7 +6,7 @@ from src.Utils.Constants import SUMMARYFILENAME
 
 class TableFrame(tk.Frame):
     """Frame responsible for displaying aggregted data in tabular format"""
-    def __init__(self, root, pathToFiles:str, chosenCols=['Acc magnitude avg','Eda avg','Temp avg','Movement intensity','Steps count','Rest','On Wrist'], existingDf=None):
+    def __init__(self, root, pathToFiles:str, chosenCols=['Acc magnitude avg','Eda avg','Temp avg','Movement intensity','Steps count','Rest','On Wrist'], existingDf=None, patientID = 0):
         """Create a new aggregation table frame to display. Can use an existing data frame or create new one to aggregate."""
         self.summaryCsvPath = path.join(pathToFiles, SUMMARYFILENAME)
         self.chosenCols = chosenCols
@@ -17,6 +17,7 @@ class TableFrame(tk.Frame):
         self.tree = self.createTable()
         self.patientId = self.fileSelectorFrame.GetPatientId()
         self.dateLabel = str(self.startDate_min) + "-" + str(self.endDate_max)
+        
 
 
     def createTable(self):
