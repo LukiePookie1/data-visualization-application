@@ -57,8 +57,10 @@ class GraphManager():
         self.slider = RangeSlider(self.sliderax, "Threshold", dates.date2num(self.df[timeColumn]).min(), dates.date2num(self.df[timeColumn]).max() - (2 * stepVal), valstep=stepVal * self.granularity, valinit=[dates.date2num(self.df[timeColumn]).min(), dates.date2num(self.df['Datetime (UTC)']).max()])
         
         i = 0
+        print(self.df.columns)
         for column in self.df.columns:
             if column not in ['Datetime (UTC)', 'Datetime (Local)'] and self.numberOfGraphs > 1:
+                print(column)
                 self.axs[i].set_xlabel('Time (Hour:Min:Sec)')
                 self.axs[i].set_ylabel(column)
                 self.axs[i].xaxis.set_major_locator(plt.MaxNLocator(24))
@@ -70,6 +72,7 @@ class GraphManager():
                 i += 1
                 
             elif column not in ['Datetime (UTC)', 'Datetime (Local)']:
+                print(column)
                 self.axs.set_xlabel('Time (Hour:Min:Sec)')
                 self.axs.set_ylabel(column)
                 self.axs.xaxis.set_major_locator(plt.MaxNLocator(24))

@@ -17,7 +17,9 @@ class DataFrame_Windowed():
 
 		
 		self.timeZone = self.data.loc[0].at['Timezone (minutes)']
-		self.data.drop('Timezone (minutes)', axis=1)
+		print(self.data.head())
+		self.data.drop(columns='Timezone (minutes)', inplace=True)
+		print(self.data.head())
 		print(self.data.columns)
 		self.data['Datetime (Local)'] = pd.to_datetime(self.data['Datetime (UTC)']) - pd.DateOffset(minutes = int(self.timeZone))
 		self.data['Datetime (Local)'] = self.data['Datetime (Local)'].dt.strftime('%H:%M:%S')
@@ -64,7 +66,7 @@ class DataFrame_Windowed():
 		"""Returns a list of selected columns excluding Datetime"""
 		result = []
 		for col in self.data.columns:
-			if col != 'Datetime (UTC)':
+			if col not in ['Datetime (UTC)', 'Datetime (Local)']:
 				result.append(col)
 		return result
 
