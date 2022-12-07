@@ -24,13 +24,30 @@ class DataBuilderFrame(tk.Frame):
         self.createTableButton = tk.Button(self, text="Create Summary", command=self.CreateSummary)
         self.createTableButton.pack(anchor=tk.E, pady=5)
 
+        self.displayTimeSet = ('Datetime (UTC)', 'Datetime (Local)')
+        self.displayTimeSetIndex = 0
+        self.displayTimeButtonStringVar = tk.StringVar()
+        self.displayTimeButtonStringVar.set('Datetime (UTC)')
+        self.setDisplayTimeButton = tk.Button(self, textvariable=self.displayTimeButtonStringVar, command=self.SwitchTime)
+        self.setDisplayTimeButton.pack(anchor=tk.E, pady=5)
+
         self.numberOfVisuals = 0
         self.numberOfTables = 0
+
+
+    def SwitchTime(self):
+        if self.displayTimeSetIndex == 0:
+            self.displayTimeSetIndex = 1 
+        else:
+            self.displayTimeSetIndex = 0
+
+        self.displayTimeButtonStringVar.set(self.displayTimeSet[self.displayTimeSetIndex])
 
 
     def CreateSummary(self):
         pathToFiles = self.fileSelectorFrame.GetPathToFiles()
         chosenCols = self.columnSelectorFrame.GetChosenColumns()
+        patientId = self.fileSelectorFrame.GetPatientId()
 
         if not pathToFiles:
             messagebox.showwarning('Data Builder Failed', 'Must select a patient date and id (both should highlight blue).')
@@ -40,7 +57,7 @@ class DataBuilderFrame(tk.Frame):
             messagebox.showwarning('Data Summary', 'Please add one or more time series columns to import for summary.')
             return
 
-        table_frame = TableFrame(self.notebook, pathToFiles, chosenCols)
+        table_frame = TableFrame(self.notebook, pathToFiles, chosenCols, patientID=patientId)
         table_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         
         self.numberOfTables += 1
@@ -51,6 +68,8 @@ class DataBuilderFrame(tk.Frame):
         """Button Command Callback To Generate a New Visual Based on User Config"""
         pathToFiles = self.fileSelectorFrame.GetPathToFiles()
         chosenCols = self.columnSelectorFrame.GetChosenColumns()
+        timeColumn = self.displayTimeSet[self.displayTimeSetIndex]
+        patientId = self.fileSelectorFrame.GetPatientId()
 
         if not pathToFiles:
             messagebox.showwarning('Data Builder Failed', 'Must select a patient date and id (both should highlight blue).')
@@ -62,7 +81,7 @@ class DataBuilderFrame(tk.Frame):
 
         # Create Visual Frame
         # Add To Notebook, Maybe Set That Tab as active
-        visual_frame = VisualizerFrame(self.notebook, pathToFiles, chosenCols)
+        visual_frame = VisualizerFrame(self.notebook, pathToFiles, chosenCols, timeColumn)
         visual_frame.pack(fill=tk.BOTH, expand=True)
 
         self.numberOfVisuals += 1

@@ -8,22 +8,31 @@ class DataFrame_Windowed():
 		if colsToKeep:
 			if 'Datetime (UTC)' not in colsToKeep:
 				colsToKeep.append('Datetime (UTC)')
+			if 'Timezone (minutes)' not in colsToKeep:
+				colsToKeep.append('Timezone (minutes)')
 			self.data = pd.read_csv(filePath, usecols=colsToKeep)
 		else:
 			self.data = pd.read_csv(filePath)
+		
+		self.timeZone = self.data.loc[0].at['Timezone (minutes)']
+		print(self.data.head())
+		self.data.drop(columns='Timezone (minutes)', inplace=True)
+		print(self.data.head())
+		print(self.data.columns)
+		self.data['Datetime (Local)'] = pd.to_datetime(self.data['Datetime (UTC)']) + pd.DateOffset(minutes = int(self.timeZone))
+		self.data['Datetime (Local)'] = self.data['Datetime (Local)'].dt.strftime('%H:%M:%S')
 
 		self.data['Datetime (UTC)'] = pd.to_datetime(self.data['Datetime (UTC)'])
-		self.data['Datetime (UTC)'] = self.data["Datetime (UTC)"].dt.strftime('%H:%M:%S')
+		self.data['Datetime (UTC)'] = self.data['Datetime (UTC)'].dt.strftime('%H:%M:%S')
+
 		self.data.sort_values(by=['Datetime (UTC)'], inplace=True)
 		self.filePath = filePath
 		self.startDate_min = self.data['Datetime (UTC)'].min()
 		self.endDate_max = self.data['Datetime (UTC)'].max()
 		self.curStartDate = self.startDate_min
 		self.curEndDate = self.endDate_max
-
-
-
-	
+		
+		
 	def RemoveColumn(self, colToDrop):
 		if colToDrop == 'Datetime (UTC)':
 			raise Exception('Cannot remove Datetime column from data frame. Required for Time Series.')
@@ -54,7 +63,7 @@ class DataFrame_Windowed():
 		"""Returns a list of selected columns excluding Datetime"""
 		result = []
 		for col in self.data.columns:
-			if col != 'Datetime (UTC)':
+			if col not in ['Datetime (UTC)', 'Datetime (Local)']:
 				result.append(col)
 		return result
 
@@ -63,5 +72,4 @@ class DataFrame_Windowed():
 		summaryStats = self.data.describe()
 		summaryStats = summaryStats[[col for col in self.data.columns if col in TIME_SERIES_COLUMNS]]
 		return summaryStats
-
-
+		

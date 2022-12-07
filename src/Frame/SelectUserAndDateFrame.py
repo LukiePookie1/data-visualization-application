@@ -29,6 +29,9 @@ class SelectUserAndDateFrame(tk.Frame):
         self.patientListbox.pack(side=tk.RIGHT, expand=False, fill=tk.BOTH)
         self.patientListbox.bind('<<ListboxSelect>>', self.OnPatientSelected)
 
+        self.patientSelected = None
+        self.patientDateSelected = None
+
 
     def UpdateDateOptions(self):
         """ Update date list and listbox of dates"""
@@ -54,6 +57,7 @@ class SelectUserAndDateFrame(tk.Frame):
         """Callback for user selection of date. Updates Patient list"""
         try:
             selected_index = self.dateListbox.curselection()[0]
+            self.patientDateSelected = self.dateListbox.get(selected_index)
         except IndexError:
             return
 
@@ -65,6 +69,7 @@ class SelectUserAndDateFrame(tk.Frame):
         """Callback for user selection of patient id. Updates file path to patient files"""
         try:
             selected_index = self.patientListbox.curselection()[0]
+            self.patientSelected = self.patientListbox.get(selected_index)
         except IndexError:
             return
 
@@ -79,3 +84,11 @@ class SelectUserAndDateFrame(tk.Frame):
             print('Warning: No path available from data builder panel. Notifying User...')
             return None
 
+
+    def GetPatientId(self):
+        """Return the selected patient id as a string"""
+        if self.patientSelected:
+            return self.patientSelected
+        else:
+            print('Warning: Unknown patient label selected.')
+            return None
