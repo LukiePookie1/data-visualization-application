@@ -54,7 +54,7 @@ class GraphManager():
         stepVal = dates.date2num(datetime(2000, 1, 1, hour=0, minute=1, second=0)) - dates.date2num(datetime(2000, 1, 1, hour=0, minute=0, second=0))
         
         self.sliderax = figure.add_axes([0.3, 0.05, 0.4, 0.04])
-        self.slider = RangeSlider(self.sliderax, "Threshold", dates.date2num(self.df[timeColumn]).min(), dates.date2num(self.df[timeColumn]).max() - (2 * stepVal), valstep=stepVal * self.granularity, valinit=[dates.date2num(self.df[timeColumn]).min(), dates.date2num(self.df['Datetime (UTC)']).max()])
+        self.slider = RangeSlider(self.sliderax, "Threshold", dates.date2num(self.df[timeColumn]).min(), dates.date2num(self.df[timeColumn]).max() - (2 * stepVal), valstep=stepVal * self.granularity, valinit=[dates.date2num(self.df[timeColumn]).min(), dates.date2num(self.df[timeColumn]).max()])
         
         i = 0
         print(self.df.columns)
@@ -149,7 +149,7 @@ class VisualizerFrame(tk.Frame):
         self.isLocal = not self.isLocal
 
         timeColumn = 'Datetime (Local)' if self.isLocal else 'Datetime (UTC)'
-        self.graphManager.SetupGraphs(self, timeColumn)
+        self.graphManager.SetupGraphs(timeColumn)
 
         
 		
