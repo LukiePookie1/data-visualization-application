@@ -14,19 +14,17 @@ class DataFrame_Windowed():
 			self.data = pd.read_csv(filePath, usecols=colsToKeep)
 		else:
 			self.data = pd.read_csv(filePath)
-
 		
 		self.timeZone = self.data.loc[0].at['Timezone (minutes)']
 		print(self.data.head())
 		self.data.drop(columns='Timezone (minutes)', inplace=True)
 		print(self.data.head())
 		print(self.data.columns)
-		self.data['Datetime (Local)'] = pd.to_datetime(self.data['Datetime (UTC)']) - pd.DateOffset(minutes = int(self.timeZone))
+		self.data['Datetime (Local)'] = pd.to_datetime(self.data['Datetime (UTC)']) + pd.DateOffset(minutes = int(self.timeZone))
 		self.data['Datetime (Local)'] = self.data['Datetime (Local)'].dt.strftime('%H:%M:%S')
 
 		self.data['Datetime (UTC)'] = pd.to_datetime(self.data['Datetime (UTC)'])
 		self.data['Datetime (UTC)'] = self.data['Datetime (UTC)'].dt.strftime('%H:%M:%S')
-		
 
 		self.data.sort_values(by=['Datetime (UTC)'], inplace=True)
 		self.filePath = filePath
@@ -76,7 +74,3 @@ class DataFrame_Windowed():
 		summaryStats = summaryStats[[col for col in self.data.columns if col in TIME_SERIES_COLUMNS]]
 		return summaryStats
 		
-
-    
-
-

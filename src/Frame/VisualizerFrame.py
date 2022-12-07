@@ -12,10 +12,10 @@ from matplotlib.widgets import RangeSlider
 
 class GraphManager():
     """Responsible for managing a set of plots"""
-    def __init__(self, root, pathToSummaryCsv, chosenCols):
+    def __init__(self, root, pathToSummaryCsv, chosenCols, timeColumn):
         self.root = root
         self.df_windowed = DataFrame_Windowed(pathToSummaryCsv, chosenCols)
-        self.SetupGraphs()
+        self.SetupGraphs(timeColumn=timeColumn)
 
 
     def SetupGraphs(self, timeColumn='Datetime (UTC)'):
@@ -33,9 +33,9 @@ class GraphManager():
         #pd.to_datetime(df['Datetime (UTC)'], utc=True, inplace=True)
         print("After: ", self.df[timeColumn].iloc[-1])
 
-#        df['Datetime (UTC)'] = dates.date2num(df['Datetime (UTC)'])
+        #df['Datetime (UTC)'] = dates.date2num(df['Datetime (UTC)'])
         
-        xlocator = dates.HourLocator(byhour=range(0, 24, 1))
+        #xlocator = dates.HourLocator(byhour=range(0, 24, 1))
 
         self.figure = figure
         self.axs = axs
@@ -130,7 +130,7 @@ class GraphManager():
 class VisualizerFrame(tk.Frame):
     """Responsible for displaying all plots and synchronizing callbacks in a frame"""
 
-    def __init__(self, notebook, pathToFiles:str, chosenCols:list):
+    def __init__(self, notebook, pathToFiles:str, chosenCols:list, timeColumn:str):
         """Creates a new visualization frame for displaying multiple time series plots"""
         super().__init__(notebook, highlightbackground="green", highlightthickness=2)
         self.summaryCsvPath = path.join(pathToFiles, SUMMARYFILENAME)
@@ -138,18 +138,6 @@ class VisualizerFrame(tk.Frame):
         self.dependentVariables = chosenCols[:]
         self.numOfGraphs = len(self.dependentVariables)
 
-        self.graphManager = GraphManager(self, self.summaryCsvPath, chosenCols)
+        self.graphManager = GraphManager(self, self.summaryCsvPath, chosenCols, timeColumn)
         self.graphManager.GetCanvas().get_tk_widget().pack(fill=tk.BOTH, expand=True)
-
-        self.isLocal = False
-        self.convertTimezoneButton = tk.Button(self, text='Convert Timezone', command=self.timezoneConvert)
-        self.convertTimezoneButton.pack(anchor=tk.W, padx=5, pady=5)
-
-    def timezoneConvert(self):
-        self.isLocal = not self.isLocal
-
-        timeColumn = 'Datetime (Local)' if self.isLocal else 'Datetime (UTC)'
-        self.graphManager.SetupGraphs(timeColumn)
-
-        
 		
