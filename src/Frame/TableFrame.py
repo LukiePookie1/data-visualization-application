@@ -6,15 +6,19 @@ from src.Utils.Constants import SUMMARYFILENAME
 
 class TableFrame(tk.Frame):
     """Frame responsible for displaying aggregted data in tabular format"""
-    def __init__(self, root, pathToFiles:str, chosenCols=['Acc magnitude avg','Eda avg','Temp avg','Movement intensity','Steps count','Rest','On Wrist'], existingDf=None):
+    def __init__(self, root, pathToFiles:str, chosenCols=['Acc magnitude avg','Eda avg','Temp avg','Movement intensity','Steps count','Rest','On Wrist'], existingDf=None, patientID=None):
         """Create a new aggregation table frame to display. Can use an existing data frame or create new one to aggregate."""
         self.summaryCsvPath = path.join(pathToFiles, SUMMARYFILENAME)
         self.chosenCols = chosenCols
         self.existingDf = existingDf
+        self.patientId = patientID
 
         super().__init__(root, highlightbackground='blue', highlightthickness=2)
+        self.label = tk.Label(self, text='Summary Stats for Patient ID: ' + patientID)
+        self.label.pack()
         self.root = root
         self.tree = self.createTable()
+        self.patientId = patientID
 
 
     def createTable(self):
@@ -42,6 +46,8 @@ class TableFrame(tk.Frame):
 
         #create tree
         tree = ttk.Treeview(self, columns=dfCols, show='headings')
+
+        #Title for tree
 
         #create headers, set column width
         for colHead in dfCols:

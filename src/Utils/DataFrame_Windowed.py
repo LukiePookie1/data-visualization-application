@@ -5,7 +5,6 @@ from .Constants import TIME_SERIES_COLUMNS
 class DataFrame_Windowed():
 	def __init__(self, filePath, colsToKeep=None):
 		"""Initialize a windowed dataframe"""
-		
 		if colsToKeep:
 			if 'Datetime (UTC)' not in colsToKeep:
 				colsToKeep.append('Datetime (UTC)')
