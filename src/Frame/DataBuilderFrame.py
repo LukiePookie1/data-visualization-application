@@ -68,6 +68,7 @@ class DataBuilderFrame(tk.Frame):
         pathToFiles = self.fileSelectorFrame.GetPathToFiles()
         chosenCols = self.columnSelectorFrame.GetChosenColumns()
         timeColumn = self.displayTimeSet[self.displayTimeSetIndex]
+        patientId = self.fileSelectorFrame.GetPatientId()
 
         if not pathToFiles:
             messagebox.showwarning('Data Builder Failed', 'Must select a patient date and id (both should highlight blue).')
