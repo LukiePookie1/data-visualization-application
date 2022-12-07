@@ -132,7 +132,7 @@ class GraphManager():
 class VisualizerFrame(tk.Frame):
     """Responsible for displaying all plots and synchronizing callbacks in a frame"""
 
-    def __init__(self, notebook, pathToFiles:str, chosenCols:list, timeColumn:str):
+    def __init__(self, notebook, pathToFiles:str, chosenCols:list, timeColumn:str, patientId:str):
         """Creates a new visualization frame for displaying multiple time series plots"""
         super().__init__(notebook, highlightbackground="green", highlightthickness=2)
         self.summaryCsvPath = path.join(pathToFiles, SUMMARYFILENAME)
@@ -140,6 +140,10 @@ class VisualizerFrame(tk.Frame):
         self.dependentVariables = chosenCols[:]
         self.numOfGraphs = len(self.dependentVariables)
 
+        self.label = tk.Label(self, text='Patient ID: ' + patientId)
+        self.label.pack()
+        
         self.graphManager = GraphManager(self, self.summaryCsvPath, chosenCols, timeColumn)
         self.graphManager.GetCanvas().get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
 		

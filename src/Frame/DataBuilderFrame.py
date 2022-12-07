@@ -81,7 +81,7 @@ class DataBuilderFrame(tk.Frame):
 
         # Create Visual Frame
         # Add To Notebook, Maybe Set That Tab as active
-        visual_frame = VisualizerFrame(self.notebook, pathToFiles, chosenCols, timeColumn)
+        visual_frame = VisualizerFrame(self.notebook, pathToFiles, chosenCols, timeColumn, patientId)
         visual_frame.pack(fill=tk.BOTH, expand=True)
 
         self.numberOfVisuals += 1
