@@ -2,15 +2,14 @@ import tkinter as tk
 from tkinter import ttk
 from os import path
 from src.Utils.DataFrame_Windowed import DataFrame_Windowed
-from src.Utils.Constants import SUMMARYFILENAME
+from src.Utils.Constants import SUMMARYFILENAME, SUMMARY_COLUMNS
 
 class TableFrame(tk.Frame):
     """Frame responsible for displaying aggregted data in tabular format"""
-    def __init__(self, root, pathToFiles:str, chosenCols=['Acc magnitude avg','Eda avg','Temp avg','Movement intensity','Steps count','Rest','On Wrist'], existingDf=None, patientID=None):
+    def __init__(self, root, pathToFiles:str, chosenCols=SUMMARY_COLUMNS, patientID=None):
         """Create a new aggregation table frame to display. Can use an existing data frame or create new one to aggregate."""
         self.summaryCsvPath = path.join(pathToFiles, SUMMARYFILENAME)
         self.chosenCols = chosenCols
-        self.existingDf = existingDf
         self.patientId = patientID
 
         super().__init__(root, highlightbackground='blue', highlightthickness=2)
@@ -23,10 +22,7 @@ class TableFrame(tk.Frame):
 
     def createTable(self):
         """Helper for creating the table with aggregated data"""
-        if self.existingDf:
-            df_windowed = self.existingDf
-        else:
-            df_windowed = DataFrame_Windowed(self.summaryCsvPath, colsToKeep=self.chosenCols)
+        df_windowed = DataFrame_Windowed(self.summaryCsvPath, colsToKeep=self.chosenCols)
 
         #Aggregate data, round to 2 decimal places
         summaryStats = df_windowed.Aggregate().round(2)

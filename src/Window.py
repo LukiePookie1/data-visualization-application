@@ -3,10 +3,10 @@ from tkinter.ttk import Notebook
 from src.Frame.DataBuilderFrame import DataBuilderFrame
 
 class Window(tk.Tk):
-    def __init__(self, appname, pathToDatasets):
+    def __init__(self, apptitle, pathToDatasets):
         """Creates a top-level window for the application responsible for the notebook and window geometry."""
         super().__init__()
-        self.title(appname)
+        self.title(apptitle)
         self.geometry('1200x900')
 
         self.notebook = Notebook(self)

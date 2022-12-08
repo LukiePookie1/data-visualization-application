@@ -5,6 +5,8 @@ from src.Frame.ColumnSelectorFrame import ColumnSelectorFrame
 from src.Frame.VisualizerFrame import VisualizerFrame
 from src.Frame.TableFrame import TableFrame
 
+DISPLAYTIMEOPTIONS=('Datetime (UTC)', 'Datetime (Local)')
+
 class DataBuilderFrame(tk.Frame):
     """ User interface for configuring dataset and options to load in"""
     def __init__(self, notebook, pathToDatasets):
@@ -24,10 +26,9 @@ class DataBuilderFrame(tk.Frame):
         self.createTableButton = tk.Button(self, text="Create Summary", command=self.CreateSummary)
         self.createTableButton.pack(anchor=tk.E, pady=5)
 
-        self.displayTimeSet = ('Datetime (UTC)', 'Datetime (Local)')
         self.displayTimeSetIndex = 0
         self.displayTimeButtonStringVar = tk.StringVar()
-        self.displayTimeButtonStringVar.set('Datetime (UTC)')
+        self.displayTimeButtonStringVar.set(DISPLAYTIMEOPTIONS[0])
         self.setDisplayTimeButton = tk.Button(self, textvariable=self.displayTimeButtonStringVar, command=self.SwitchTime)
         self.setDisplayTimeButton.pack(anchor=tk.E, pady=5)
 
@@ -36,25 +37,24 @@ class DataBuilderFrame(tk.Frame):
 
 
     def SwitchTime(self):
-        if self.displayTimeSetIndex == 0:
-            self.displayTimeSetIndex = 1 
-        else:
-            self.displayTimeSetIndex = 0
-
-        self.displayTimeButtonStringVar.set(self.displayTimeSet[self.displayTimeSetIndex])
+        """Callback for Toggling Type of Time to Display"""
+        # toggling here
+        self.displayTimeSetIndex ^= 1
+        self.displayTimeButtonStringVar.set(DISPLAYTIMEOPTIONS[self.displayTimeSetIndex])
 
 
     def CreateSummary(self):
+        """Button Command Callback To Generate a New Visual Based on User Config"""
         pathToFiles = self.fileSelectorFrame.GetPathToFiles()
         chosenCols = self.columnSelectorFrame.GetChosenColumns()
         patientId = self.fileSelectorFrame.GetPatientId()
 
         if not pathToFiles:
-            messagebox.showwarning('Data Builder Failed', 'Must select a patient date and id (both should highlight blue).')
+            messagebox.showwarning('Data Build Failure', 'Must select a patient date and id (both should highlight blue).')
             return
 
         if len(chosenCols) == 0:
-            messagebox.showwarning('Data Summary', 'Please add one or more time series columns to import for summary.')
+            messagebox.showwarning('Data Summary Failure', 'Please add one or more time series columns to import for summary.')
             return
 
         table_frame = TableFrame(self.notebook, pathToFiles, chosenCols, patientID=patientId)
@@ -68,15 +68,15 @@ class DataBuilderFrame(tk.Frame):
         """Button Command Callback To Generate a New Visual Based on User Config"""
         pathToFiles = self.fileSelectorFrame.GetPathToFiles()
         chosenCols = self.columnSelectorFrame.GetChosenColumns()
-        timeColumn = self.displayTimeSet[self.displayTimeSetIndex]
+        timeColumn = DISPLAYTIMEOPTIONS[self.displayTimeSetIndex]
         patientId = self.fileSelectorFrame.GetPatientId()
 
         if not pathToFiles:
-            messagebox.showwarning('Data Builder Failed', 'Must select a patient date and id (both should highlight blue).')
+            messagebox.showwarning('Data Build Failure', 'Must select a patient date and id (both should highlight blue).')
             return
 
         if len(chosenCols) == 0:
-            messagebox.showwarning('Data Build Failed', 'Please add one or more time series columns to import for visualization.')
+            messagebox.showwarning('Visualization Build Failure', 'Please add one or more time series columns to import for visualization.')
             return
 
         # Create Visual Frame
