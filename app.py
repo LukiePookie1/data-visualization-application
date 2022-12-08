@@ -12,7 +12,8 @@ import matplotlib
 matplotlib.use('tkagg')
 
 APPNAME='Digi-Vis'
-APPVERSION = '0.0.0.1'
+APPVERSION = '1.0.0'
+APPTITLE=APPNAME + ' ' + APPVERSION
 DEFAULTPATHTODATASETS = './datasets'
 
 def OnClose():
@@ -20,6 +21,6 @@ def OnClose():
     sys.exit(0)
 
 if __name__ == "__main__":
-    window = Window(APPNAME, DEFAULTPATHTODATASETS)
+    window = Window(APPTITLE, DEFAULTPATHTODATASETS)
     window.protocol('WM_DELETE_WINDOW', OnClose)
     window.mainloop()

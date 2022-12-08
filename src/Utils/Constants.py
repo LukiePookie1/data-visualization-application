@@ -1,4 +1,4 @@
-SUMMARY_COLUMNS = ['Datetime (UTC)','Timezone (minutes)','Unix Timestamp (UTC)','Acc magnitude avg','Eda avg','Temp avg','Movement intensity','Steps count','Rest','On Wrist']
+SUMMARY_COLUMNS = ['Acc magnitude avg','Eda avg','Temp avg','Movement intensity','Steps count','Rest','On Wrist']
 TIME_SERIES_COLUMNS = ['Acc magnitude avg','Eda avg','Temp avg','Movement intensity','Steps count','Rest']
 
 SUMMARYFILENAME = 'summary.csv'
