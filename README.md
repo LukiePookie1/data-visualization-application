@@ -1,4 +1,4 @@
-# Steamed Ham
+# Data Visualization Application
 An Interactive Data Visualization Application for Embrace Condensed Data Sets
 
 ## Dependencies (WIP)
